@@ -29,12 +29,20 @@ describe('Basic user flow for SPA ', () => {
 
   it('Test3: Clicking first <journal-entry>, new URL should contain /#entry1', async () => {
     // implement test3: Clicking on the first journal entry should update the URL to contain “/#entry1”
+    const entries = await page.$$('journal-entry');
+    await entries[0].click();
+    
+    let valid = await page.evaluate(() => window.location.href.includes('/#entry1'));
+    expect(valid).toBe(true);
 
   });
 
   it('Test4: On first Entry page - checking page header title', async () => {
     // implement test4: Clicking on the first journal entry should update the header text to “Entry 1” 
-
+    const entries = await page.$$('journal-entry');
+    entries[0].click();
+    const head = await page.evaluate(() => document.querySelector('h1').textContent);
+    expect(head).toBe('Entry 1'); 
   });
 
   it('Test5: On first Entry page - checking <entry-page> contents', async () => {
@@ -50,32 +58,68 @@ describe('Basic user flow for SPA ', () => {
           }
         }
       */
+     let valid = true;
+      const entries = await page.$$('journal-entry');
+      entries[0].click();
+      let title = await page.evaluate(() => document.querySelector('.entry-title'));
+      let date = await page.evaluate(() => document.querySelector('.entry-date'));
+      let content = await page.evaluate(() => document.querySelector('.entry-content'));
+      let img = await page.evaluate(() => document.querySelector('.entry-image'));
+      if(title.textContent!='You like jazz?') valid=false;
+      if(date.textContent!='4/25/2021') valid=false;
+      if(content.textContent!="According to all known laws of aviation, there is no way a bee should be able to fly. Its wings are too small to get its fat little body off the ground. The bee, of course, flies anyway because bees don't care what humans think is impossible.") valid=false;
+      if(img.src!='https://i1.wp.com/www.thepopcornmuncher.com/wp-content/uploads/2016/11/bee-movie.jpg?resize=800%2C455') valid=false;
+      if(img.alt!='bee with sunglasses') valid=false;
+      expect(valid).toBe(true);
+        
+
 
   }, 10000);
 
   it('Test6: On first Entry page - checking <body> element classes', async () => {
     // implement test6: Clicking on the first journal entry should update the class attribute of <body> to ‘single-entry’
+    let valid = true;
+    const entries = await page.$$('journal-entry');
+    entries[0].click();
+    let className = await page.evaluate(() => document.body.classList[0]);
+    expect(className).toBe('single-entry');
 
   });
 
   it('Test7: Clicking the settings icon, new URL should contain #settings', async () => {
     // implement test7: Clicking on the settings icon should update the URL to contain “/#settings”
+    let img = await page.$$('img');
+    img.click();
+    
+    let valid = await page.evaluate(() => window.location.href.includes('/#settings'));
+    expect(valid).toBe(true);
+    
 
   });
 
   it('Test8: On Settings page - checking page header title', async () => {
     // implement test8: Clicking on the settings icon should update the header to be “Settings”
+    let img = await page.$$('img');
+    img.click();
+    const head = await page.evaluate(() => document.querySelector('h1').textContent);
+    expect(head).toBe('Settings'); 
 
   });
 
   it('Test9: On Settings page - checking <body> element classes', async () => {
     // implement test9: Clicking on the settings icon should update the class attribute of <body> to ‘settings’
+    let img = await page.$$('img');
+    img.click();
+    let className = await page.evaluate(() => document.body.classList[0]);
+    expect(img).toBe('settings');
 
   });
 
   it('Test10: Clicking the back button, new URL should be /#entry1', async() => {
     // implement test10: Clicking on the back button should update the URL to contain ‘/#entry1’
-
+    await page.evaluate(() => history.go(-1));
+    let valid = await page.evaluate(() => window.location.href.includes('/#entry1'));
+    expect(valid).toBe(true);
   });
 
   // define and implement test11: Clicking the back button once should bring the user back to the home page
